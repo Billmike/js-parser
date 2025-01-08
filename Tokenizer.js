@@ -1,3 +1,23 @@
+const Spec = [
+  // Numbers
+  [/^\d+/, 'NUMBER'],
+
+  // Strings
+  [/^"[^"]*"/, 'STRING'],
+  [/^'[^']*'/, 'STRING'],
+
+  // Whitespace
+  [/^\s+/, null],
+
+  // Comments
+
+  // Skip single line comments
+  [/^\/\/.*/, null],
+
+  // Skip multi line comments
+  [/^\/\*[\s\S]*?\*\//, null],
+];
+
 class Tokenizer {
   init(code) {
     this._code = code;
@@ -12,6 +32,16 @@ class Tokenizer {
     return this._cursor < this._code.length;
   }
 
+  _match(regexp, string) {
+    const matched = regexp.exec(string);
+    if (matched === null) {
+      return null;
+    }
+
+    this._cursor += matched[0].length;
+    return matched[0];
+  }
+
   getNextToken() {
     if (!this.hasMoreTokens()) {
       return null;
@@ -19,38 +49,24 @@ class Tokenizer {
 
     const string = this._code.slice(this._cursor);
 
-    // Numbers
-    if (!Number.isNaN(Number(string[0]))) {
-      let number = '';
+    for (const [regexp, type] of Spec) {
+      const tokenValue = this._match(regexp, string);
 
-      while(!Number.isNaN(Number(string[this._cursor]))) {
-        number += string[this._cursor++];
+      if (tokenValue === null) {
+        continue;
+      }
+
+      if (type === null) {
+        return this.getNextToken();
       }
 
       return {
-        type: 'NUMBER',
-        value: number,
+        type,
+        value: tokenValue,
       };
     }
 
-    // Strings
-    if (string[0] === '"') {
-      let stringChar = '';
-
-      do {
-        stringChar += string[this._cursor++];
-      } while(string[this._cursor] !== '"' && !this.isEOF());
-
-      stringChar += this._cursor++;
-
-      // string += string[this._cursor++];
-
-      return {
-        type: 'STRING',
-        value: stringChar,
-      };
-    }
-
+    throw new SyntaxError(`Unexpected token: ${string[0]}`);
   }
 }
 
