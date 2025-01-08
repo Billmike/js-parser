@@ -10,13 +10,16 @@ const RESET = '\x1b[0m';
 
   // Test 1: Parse double-quoted string
   {
-    const ast = parser.parse('"hello"');
+    const ast = parser.parse('"hello";');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'StringLiteral',
-        value: 'hello'
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'StringLiteral',
+          value: 'hello'
+        }
+      }]
     };
     
     console.assert(
@@ -28,13 +31,16 @@ const RESET = '\x1b[0m';
 
   // Test 2: Parse single-quoted string
   {
-    const ast = parser.parse("'world'");
+    const ast = parser.parse("'world';");
     const expected = {
       type: 'Program',
-      body: {
-        type: 'StringLiteral',
-        value: 'world'
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'StringLiteral',
+          value: 'world'
+        }
+      }]
     };
     
     console.assert(
@@ -64,13 +70,16 @@ const RESET = '\x1b[0m';
 
   // Test 1: Parse integer
   {
-    const ast = parser.parse('42');
+    const ast = parser.parse('42;');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -82,13 +91,16 @@ const RESET = '\x1b[0m';
 
   // Test 2: Parse multi-digit number 
   {
-    const ast = parser.parse('1234567');
+    const ast = parser.parse('1234567;');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 1234567
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 1234567
+        }
+      }]
     };
     
     console.assert(
@@ -102,7 +114,7 @@ const RESET = '\x1b[0m';
   {
     let threw = false;
     try {
-      parser.parse('42a');
+      parser.parse('42a;');
     } catch (e) {
       threw = e instanceof SyntaxError;
     }
@@ -118,13 +130,16 @@ const RESET = '\x1b[0m';
 
   // Test 1: Parse number with leading whitespace
   {
-    const ast = parser.parse('   42');
+    const ast = parser.parse('   42;');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -136,13 +151,16 @@ const RESET = '\x1b[0m';
 
   // Test 2: Parse number with trailing whitespace
   {
-    const ast = parser.parse('42   ');
+    const ast = parser.parse('42   ;');
     const expected = {
       type: 'Program', 
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -154,13 +172,16 @@ const RESET = '\x1b[0m';
 
   // Test 3: Parse number with whitespace on both sides
   {
-    const ast = parser.parse('  42  ');
+    const ast = parser.parse('  42  ;');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -179,13 +200,16 @@ const RESET = '\x1b[0m';
 
   // Test 1: Parse number with single line comment before
   {
-    const ast = parser.parse('// This is a comment\n42');
+    const ast = parser.parse('// This is a comment\n42;');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -197,13 +221,16 @@ const RESET = '\x1b[0m';
 
   // Test 2: Parse number with single line comment after
   {
-    const ast = parser.parse('42 // This is a comment');
+    const ast = parser.parse('42; // This is a comment');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -215,13 +242,16 @@ const RESET = '\x1b[0m';
 
   // Test 3: Parse number with multi line comment before
   {
-    const ast = parser.parse('/* This is a\nmulti line comment */42');
+    const ast = parser.parse('/* This is a\nmulti line comment */42;');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -233,13 +263,16 @@ const RESET = '\x1b[0m';
 
   // Test 4: Parse number with multi line comment after
   {
-    const ast = parser.parse('42/* This is a\nmulti line comment */');
+    const ast = parser.parse('42;/* This is a\nmulti line comment */');
     const expected = {
       type: 'Program',
-      body: {
-        type: 'NumericalLiteral',
-        value: 42
-      }
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'NumericalLiteral',
+          value: 42
+        }
+      }]
     };
     
     console.assert(
@@ -251,3 +284,61 @@ const RESET = '\x1b[0m';
 
   console.log('All comment parsing tests passed!');
 })();
+
+// Test multiple expressions
+(() => {
+  const parser = new Parser();
+
+  // Test: Parse multiple expressions
+  {
+    const ast = parser.parse('42; "hello";');
+    const expected = {
+      type: 'Program',
+      body: [
+        {
+          type: 'ExpressionStatement',
+          expression: {
+            type: 'NumericalLiteral',
+            value: 42
+          }
+        },
+        {
+          type: 'ExpressionStatement', 
+          expression: {
+            type: 'StringLiteral',
+            value: 'hello'
+          }
+        }
+      ]
+    };
+    
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse multiple expressions'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse multiple expressions${RESET}`);
+  }
+
+  console.log('Multiple expressions test passed!');
+})();
+
+
+function exec() {
+  const program = `
+  // This is a comment
+  /* This is a multi line comment */
+  // This is a comment
+  /* This is a multi line comment */
+  // This is a comment
+  /* This is a multi line comment */
+
+  "hello";
+
+  42;`
+
+  const parser = new Parser();
+  const ast = parser.parse(program);
+  console.log(JSON.stringify(ast, null, 2));
+}
+
+exec();

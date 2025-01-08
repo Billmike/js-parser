@@ -2,6 +2,9 @@ const Spec = [
   // Numbers
   [/^\d+/, 'NUMBER'],
 
+  // Semicolons
+  [/^;/, 'SEMICOLON'],
+
   // Strings
   [/^"[^"]*"/, 'STRING'],
   [/^'[^']*'/, 'STRING'],

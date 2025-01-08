@@ -17,8 +17,39 @@ class Parser {
     Program() {
       return {
         type: 'Program',
-        body: this.Literal(),
+        body: this.StatementList(),
       };
+    }
+
+    /**
+     * StatementList
+     * 
+     */
+    StatementList() {
+      const statementList = [this.Statement()];
+
+      while(this._lookahead !== null) {
+        statementList.push(this.Statement());
+      }
+
+      return statementList
+    }
+
+    Statement() {
+      return this.ExpressionStatement();
+    }
+
+    ExpressionStatement() {
+      const expression = this.Expression();
+      this._eat('SEMICOLON');
+      return {
+        type: 'ExpressionStatement',
+        expression,
+      };
+    }
+
+    Expression() {
+      return this.Literal();
     }
 
     Literal() {
@@ -27,9 +58,9 @@ class Parser {
           return this.NumericalLiteral();
         case 'STRING':
           return this.StringLiteral();
-        default:
-          throw new SyntaxError(`Unexpected token: "${this._lookahead.type}"`);
       }
+
+      throw new SyntaxError(`Literal: Unexpected literal production`);
     }
 
     StringLiteral() {
