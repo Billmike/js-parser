@@ -448,6 +448,104 @@ const RESET = '\x1b[0m';
   console.log('Block statement and empty statement tests passed!');
 })();
 
+// Test binary expressions
+(() => {
+  const parser = new Parser();
+
+  // Test: Parse binary expression
+  {
+    const ast = parser.parse('42 + 1;');
+    const expected = {
+      type: 'Program',
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'BinaryExpression',
+          operator: '+',
+          left: { type: 'NumericalLiteral', value: 42 },
+          right: { type: 'NumericalLiteral', value: 1 }
+        }
+      }]
+    };
+
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse binary expression'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse binary expression${RESET}`);
+  }
+
+  // Test: Nested binary expressions
+  {
+    const ast = parser.parse('42 + 1 + 2;');
+    const expected = {
+      type: 'Program',
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'BinaryExpression',
+          operator: '+',
+          left: {
+            type: 'BinaryExpression',
+            operator: '+',
+            left: { type: 'NumericalLiteral', value: 42 },
+            right: { type: 'NumericalLiteral', value: 1 }
+          },
+          right: { type: 'NumericalLiteral', value: 2 }
+        }
+      }]
+    };
+
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse nested binary expressions'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse nested binary expressions${RESET}`);
+  }
+
+  // Test: Multiplicative expression
+  {
+    const ast = parser.parse('42 * 1;');
+    const expected = {
+      type: 'Program',
+      body: [{
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'BinaryExpression',
+          operator: '*',
+          left: { type: 'NumericalLiteral', value: 42 },
+          right: { type: 'NumericalLiteral', value: 1 }
+        }
+      }]
+    };
+
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse multiplicative expression'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse multiplicative expression${RESET}`);
+  }
+
+  // Test: Parenthesized expression
+  {
+    const ast = parser.parse('(42);');
+    const expected = {
+      type: 'Program',
+      body: [{
+        type: 'ExpressionStatement',
+        expression: { type: 'NumericalLiteral', value: 42 }
+      }]
+    };
+
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse parenthesized expression'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse parenthesized expression${RESET}`);
+  }
+
+  console.log('Binary expression tests passed!');
+})();
 
 
 function exec() {
@@ -461,7 +559,7 @@ function exec() {
 
   "hello";
 
-  42;`
+  2 + (2 + 2);`
 
   const parser = new Parser();
   const ast = parser.parse(program);

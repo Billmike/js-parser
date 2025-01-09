@@ -4,8 +4,8 @@ const Spec = [
 
   // Symbols, delimiters
   [/^;/, 'SEMICOLON'],
-  // [/^\(/, 'PAREN_OPEN'],
-  // [/^\)/, 'PAREN_CLOSE'],
+  [/^\(/, 'PAREN_OPEN'],
+  [/^\)/, 'PAREN_CLOSE'],
   [/^\{/, 'BRACE_OPEN'],
   [/^\}/, 'BRACE_CLOSE'],
 
@@ -23,6 +23,10 @@ const Spec = [
 
   // Skip multi line comments
   [/^\/\*[\s\S]*?\*\//, null],
+
+  // Operators
+  [/^[+\-]/, 'PLUS_OPERATOR'],
+  [/^[*\/]/, 'MULTIPLY_OPERATOR'],
 ];
 
 class Tokenizer {

@@ -73,7 +73,47 @@ class Parser {
     }
 
     Expression() {
+      return this.AdditiveExpression();
+    }
+
+    _BinaryExpression(builderName, operatorToken) {
+      let left = this[builderName]();
+
+      while(this._lookahead.type === operatorToken) {
+        const operator = this._eat(operatorToken).value;
+        const right = this[builderName]();
+        left = {
+          type: 'BinaryExpression',
+          operator,
+          left,
+          right,
+        };
+      }
+
+      return left;
+    }
+
+    AdditiveExpression() {
+      return this._BinaryExpression('MultiplicativeExpression', 'PLUS_OPERATOR');
+    }
+
+    MultiplicativeExpression() {    
+      return this._BinaryExpression('PrimaryExpression', 'MULTIPLY_OPERATOR');
+    }
+
+    PrimaryExpression() {
+      if(this._lookahead.type === 'PAREN_OPEN') {
+        return this.ParenthesizedExpression();
+      }
+
       return this.Literal();
+    }
+
+    ParenthesizedExpression() {
+      this._eat('PAREN_OPEN');
+      const expression = this.Expression();
+      this._eat('PAREN_CLOSE');
+      return expression;
     }
 
     Literal() {
