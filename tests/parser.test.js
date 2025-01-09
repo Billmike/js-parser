@@ -322,6 +322,133 @@ const RESET = '\x1b[0m';
   console.log('Multiple expressions test passed!');
 })();
 
+// Test block statements and empty statements
+(() => {
+  const parser = new Parser();
+
+  // Test: Empty block statement
+  {
+    const ast = parser.parse('{}');
+    const expected = {
+      type: 'Program',
+      body: [
+        {
+          type: 'BlockStatement',
+          body: []
+        }
+      ]
+    };
+    
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse empty block statement'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse empty block statement${RESET}`);
+  }
+
+  // Test: Empty statement
+  {
+    const ast = parser.parse(';');
+    const expected = {
+      type: 'Program',
+      body: [
+        {
+          type: 'EmptyStatement'
+        }
+      ]
+    };
+    
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse empty statement'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse empty statement${RESET}`);
+  }
+
+  // Test: Block statement with expressions
+  {
+    const ast = parser.parse('{ 42; "hello"; }');
+    const expected = {
+      type: 'Program', 
+      body: [
+        {
+          type: 'BlockStatement',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'NumericalLiteral',
+                value: 42
+              }
+            },
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'StringLiteral',
+                value: 'hello'
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse block statement with expressions'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse block statement with expressions${RESET}`);
+  }
+
+  // Test: Nested block statements
+  {
+    const ast = parser.parse('{ { 42; }; { "hello"; }; }');
+    const expected = {
+      type: 'Program',
+      body: [
+        {
+          type: 'BlockStatement',
+          body: [
+            {
+              type: 'BlockStatement',
+              body: [
+                {
+                  type: 'ExpressionStatement',
+                  expression: {
+                    type: 'NumericalLiteral',
+                    value: 42
+                  }
+                }
+              ]
+            },
+            {
+              type: 'BlockStatement', 
+              body: [
+                {
+                  type: 'ExpressionStatement',
+                  expression: {
+                    type: 'StringLiteral',
+                    value: 'hello'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    console.assert(
+      JSON.stringify(ast) === JSON.stringify(expected),
+      'Failed to parse nested block statements'
+    );
+    console.log(`${GREEN_CHECK} Passed: Parse nested block statements${RESET}`);
+  }
+
+  console.log('Block statement and empty statement tests passed!');
+})();
+
+
 
 function exec() {
   const program = `

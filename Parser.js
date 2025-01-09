@@ -25,10 +25,10 @@ class Parser {
      * StatementList
      * 
      */
-    StatementList() {
+    StatementList(stopLookahead = null) {
       const statementList = [this.Statement()];
 
-      while(this._lookahead !== null) {
+      while(this._lookahead !== null && this._lookahead.type !== stopLookahead) {
         statementList.push(this.Statement());
       }
 
@@ -36,7 +36,31 @@ class Parser {
     }
 
     Statement() {
-      return this.ExpressionStatement();
+      switch(this._lookahead.type) {
+        case 'SEMICOLON':
+          return this.EmptyStatement();
+        case 'BRACE_OPEN':
+          return this.BlockStatement();
+        default:
+          return this.ExpressionStatement();
+      }
+    }
+
+    EmptyStatement() {
+      this._eat('SEMICOLON');
+      return {
+        type: 'EmptyStatement',
+      };
+    }
+
+    BlockStatement() {
+      this._eat('BRACE_OPEN');
+      const body = this._lookahead.type === 'BRACE_CLOSE' ? [] : this.StatementList('BRACE_CLOSE');
+      this._eat('BRACE_CLOSE');
+      return {
+        type: 'BlockStatement',
+        body,
+      };
     }
 
     ExpressionStatement() {
