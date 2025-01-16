@@ -73,7 +73,54 @@ class Parser {
     }
 
     Expression() {
-      return this.AdditiveExpression();
+      return this.AssignmentExpression();
+    }
+
+    AssignmentExpression() {
+      const left = this.AdditiveExpression();
+
+      if (!this._isAssignmentOperator(this._lookahead.type)) {
+        return left;
+      }
+
+      return {
+        type: 'AssignmentExpression',
+        operator: this.AssignmentOperator().value,
+        left: this._checkValidAssignmentTarget(left),
+        right: this.AssignmentExpression(),
+      }
+    }
+
+    LeftHandSideExpression() {
+      return this.Identifier();
+    }
+
+    Identifier() {
+      const token = this._eat('IDENTIFIER');
+      return {
+        type: 'Identifier',
+        name: token.value,
+      };
+    }
+
+    _checkValidAssignmentTarget(node) {
+      if (node.type === 'Identifier') {
+        return node;
+      }
+
+      throw new SyntaxError('Invalid left-hand side in assignment expression');
+    }
+
+    _isAssignmentOperator(tokenType) {
+      return tokenType === 'SIMPLE_ASSIGN' || tokenType === 'COMPLEX_ASSIGN';
+    }
+
+    AssignmentOperator() {
+      if (this._lookahead.type === 'SIMPLE_ASSIGN') {
+        return this._eat('SIMPLE_ASSIGN');
+      }
+
+      return this._eat('COMPLEX_ASSIGN');
     }
 
     _BinaryExpression(builderName, operatorToken) {
@@ -102,11 +149,19 @@ class Parser {
     }
 
     PrimaryExpression() {
+      if(this.isLiteral(this._lookahead.type)) {
+        return this.Literal();
+      }
+
       if(this._lookahead.type === 'PAREN_OPEN') {
         return this.ParenthesizedExpression();
       }
 
-      return this.Literal();
+      return this.LeftHandSideExpression();
+    }
+
+    isLiteral(tokenType) {
+      return tokenType === 'NUMBER' || tokenType === 'STRING';
     }
 
     ParenthesizedExpression() {

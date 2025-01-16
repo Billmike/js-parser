@@ -9,6 +9,13 @@ const Spec = [
   [/^\{/, 'BRACE_OPEN'],
   [/^\}/, 'BRACE_CLOSE'],
 
+  // Identifiers
+  [/^\w+/, 'IDENTIFIER'],
+
+  // Assignment operators: =, +=, -=, *=, /=, *=
+  [/^=/, 'SIMPLE_ASSIGN'],
+  [/^[\*\/\+\-]=/, 'COMPLEX_ASSIGN'],
+
   // Strings
   [/^"[^"]*"/, 'STRING'],
   [/^'[^']*'/, 'STRING'],
