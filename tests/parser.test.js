@@ -1,5 +1,6 @@
 require('./string-parsing.test');
 require('./assignment.test');
+require('./variable.test');
 
 const { Parser } = require('../Parser');
 
@@ -502,7 +503,15 @@ function exec() {
 
   "hello";
 
-  a = b = c = 42;`
+  let y;
+  
+  let a, b;
+  
+  let c, d = 10;
+  
+  let x = 42;
+  
+  r = 10;`
 
   const parser = new Parser();
   const ast = parser.parse(program);

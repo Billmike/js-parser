@@ -8,6 +8,10 @@ const Spec = [
   [/^\)/, 'PAREN_CLOSE'],
   [/^\{/, 'BRACE_OPEN'],
   [/^\}/, 'BRACE_CLOSE'],
+  [/^,/, 'COMMA'],
+
+  // Keywords
+  [/^\blet\b/, 'LET'],
 
   // Identifiers
   [/^\w+/, 'IDENTIFIER'],

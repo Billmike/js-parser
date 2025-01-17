@@ -41,9 +41,49 @@ class Parser {
           return this.EmptyStatement();
         case 'BRACE_OPEN':
           return this.BlockStatement();
+        case 'LET':
+          return this.VariableStatement();
         default:
           return this.ExpressionStatement();
       }
+    }
+
+    VariableStatement() {
+      this._eat('LET');
+      const declarations = this.VariableDeclarationList();
+      this._eat('SEMICOLON');
+      return {
+        type: 'VariableStatement',
+        declarations,
+      };
+    }
+
+    VariableDeclarationList() {
+      const declarations = [];
+
+      do {
+        declarations.push(this.VariableDeclaration());
+      } while (this._lookahead.type === 'COMMA' && this._eat('COMMA'));
+
+      return declarations;
+    }
+
+    VariableDeclaration() {
+      const id = this.Identifier();
+
+      const init = this._lookahead.type !== 'SEMICOLON' && this._lookahead.type !== 'COMMA' ? this.VariableInitializer() : null;
+
+      return {
+        type: 'VariableDeclaration',
+        id,
+        init,
+      };
+    }
+
+    VariableInitializer() {
+      this._eat('SIMPLE_ASSIGN');
+
+      return this.AssignmentExpression();
     }
 
     EmptyStatement() {
