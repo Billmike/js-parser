@@ -12,6 +12,8 @@ const Spec = [
 
   // Keywords
   [/^\blet\b/, 'LET'],
+  [/^\bif\b/, 'IF'],
+  [/^\belse\b/, 'ELSE'],
 
   // Identifiers
   [/^\w+/, 'IDENTIFIER'],
@@ -38,6 +40,7 @@ const Spec = [
   // Operators
   [/^[+\-]/, 'PLUS_OPERATOR'],
   [/^[*\/]/, 'MULTIPLY_OPERATOR'],
+  [/^[<>]=?/, 'RELATIONAL_OPERATOR'],
 ];
 
 class Tokenizer {

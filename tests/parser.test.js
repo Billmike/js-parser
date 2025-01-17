@@ -1,7 +1,8 @@
 require('./string-parsing.test');
 require('./assignment.test');
 require('./variable.test');
-
+require('./if.test');
+require('./relational.test');
 const { Parser } = require('../Parser');
 
 
@@ -502,16 +503,8 @@ function exec() {
   /* This is a multi line comment */
 
   "hello";
-
-  let y;
   
-  let a, b;
-  
-  let c, d = 10;
-  
-  let x = 42;
-  
-  r = 10;`
+  if (x)  if (y) {} else {}`
 
   const parser = new Parser();
   const ast = parser.parse(program);

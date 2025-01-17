@@ -39,6 +39,8 @@ class Parser {
       switch(this._lookahead.type) {
         case 'SEMICOLON':
           return this.EmptyStatement();
+        case 'IF':
+          return this.IfStatement();
         case 'BRACE_OPEN':
           return this.BlockStatement();
         case 'LET':
@@ -46,6 +48,22 @@ class Parser {
         default:
           return this.ExpressionStatement();
       }
+    }
+
+    IfStatement() {
+      this._eat('IF');
+      this._eat('PAREN_OPEN');
+      const test = this.Expression();
+      this._eat('PAREN_CLOSE');
+      const consequent = this.Statement();
+      const alternate = this._lookahead !== null && this._lookahead.type === 'ELSE' ? this._eat('ELSE') && this.Statement() : null;
+
+      return {
+        type: 'IfStatement',
+        test,
+        consequent,
+        alternate,
+      };
     }
 
     VariableStatement() {
@@ -117,7 +135,7 @@ class Parser {
     }
 
     AssignmentExpression() {
-      const left = this.AdditiveExpression();
+      const left = this.RelationalExpression();
 
       if (!this._isAssignmentOperator(this._lookahead.type)) {
         return left;
@@ -129,6 +147,10 @@ class Parser {
         left: this._checkValidAssignmentTarget(left),
         right: this.AssignmentExpression(),
       }
+    }
+
+    RelationalExpression() {
+      return this._BinaryExpression('AdditiveExpression', 'RELATIONAL_OPERATOR');
     }
 
     LeftHandSideExpression() {
