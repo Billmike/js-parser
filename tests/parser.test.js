@@ -504,9 +504,11 @@ function exec() {
 
   "hello";
   
-  for (; ; ) {
-    
-  };`
+  def square(x, y) {
+
+  }
+  
+  // square(2);`
 
   const parser = new Parser();
   const ast = parser.parse(program);

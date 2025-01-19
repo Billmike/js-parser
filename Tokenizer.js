@@ -20,6 +20,8 @@ const Spec = [
   [/^\bwhile\b/, 'WHILE'],
   [/^\bdo\b/, 'DO'],
   [/^\bfor\b/, 'FOR'],
+  [/^\bdef\b/, 'DEF'],
+  [/^\breturn\b/, 'RETURN'],
 
   // Identifiers
   [/^\w+/, 'IDENTIFIER'],

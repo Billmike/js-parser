@@ -45,6 +45,10 @@ class Parser {
           return this.BlockStatement();
         case 'LET':
           return this.VariableStatement();
+        case 'DEF':
+          return this.FunctionDeclaration();
+        case 'RETURN':
+          return this.ReturnStatement();
         case 'WHILE':
         case 'DO':
         case 'FOR':
@@ -52,6 +56,41 @@ class Parser {
         default:
           return this.ExpressionStatement();
       }
+    }
+
+    FunctionDeclaration() {
+      this._eat('DEF');
+      const name = this.Identifier();
+      this._eat('PAREN_OPEN');
+      const params = this._lookahead.type !== 'PAREN_CLOSE' ? this.FormalParameterList() : [];
+      this._eat('PAREN_CLOSE');
+      const body = this.BlockStatement();
+      return {
+        type: 'FunctionDeclaration',
+        name,
+        params,
+        body,
+      };
+    }
+
+    FormalParameterList() {
+      const params = [];
+
+      do {
+        params.push(this.Identifier());
+      } while (this._lookahead.type === 'COMMA' && this._eat('COMMA'));
+
+      return params;
+    }
+
+    ReturnStatement() {
+      this._eat('RETURN');
+      const argument = this._lookahead.type !== 'SEMICOLON' ? this.Expression() : null;
+      this._eat('SEMICOLON');
+      return {
+        type: 'ReturnStatement',
+        argument,
+      };
     }
 
     IterationStatement() {
