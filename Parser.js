@@ -45,9 +45,83 @@ class Parser {
           return this.BlockStatement();
         case 'LET':
           return this.VariableStatement();
+        case 'WHILE':
+        case 'DO':
+        case 'FOR':
+          return this.IterationStatement();
         default:
           return this.ExpressionStatement();
       }
+    }
+
+    IterationStatement() {
+      switch(this._lookahead.type) {
+        case 'WHILE':
+          return this.WhileStatement();
+        case 'DO':
+          return this.DoWhileStatement();
+        case 'FOR':
+          return this.ForStatement();
+      }
+    }
+
+    WhileStatement() {
+      this._eat('WHILE');
+      this._eat('PAREN_OPEN');
+      const test = this.Expression();
+      this._eat('PAREN_CLOSE');
+      const body = this.Statement();
+      return {
+        type: 'WhileStatement',
+        test,
+        body,
+      };
+    }
+
+    DoWhileStatement() {
+      this._eat('DO');
+      const body = this.Statement();
+      this._eat('WHILE');
+      this._eat('PAREN_OPEN');
+      const test = this.Expression();
+      this._eat('PAREN_CLOSE');
+      this._eat('SEMICOLON');
+      return {
+        type: 'DoWhileStatement',
+        body,
+        test,
+      };
+    }
+
+    ForStatement() {
+      this._eat('FOR');
+      this._eat('PAREN_OPEN');
+
+      const init = this._lookahead.type !== 'SEMICOLON' ? this.ForStatementInit() : null;
+      this._eat('SEMICOLON');
+
+      const test = this._lookahead.type !== 'SEMICOLON' ? this.Expression() : null;
+      this._eat('SEMICOLON');
+
+      const update = this._lookahead.type !== 'PAREN_CLOSE' ? this.Expression() : null;
+      this._eat('PAREN_CLOSE');
+
+      const body = this.Statement();
+      return {
+        type: 'ForStatement',
+        init,
+        test,
+        update,
+        body,
+      };
+    }
+
+    ForStatementInit() {
+      if (this._lookahead.type === 'LET') {
+        return this.VariableStatementInit();
+      }
+
+      return this.Expression();
     }
 
     IfStatement() {
@@ -66,14 +140,19 @@ class Parser {
       };
     }
 
-    VariableStatement() {
+    VariableStatementInit() {
       this._eat('LET');
       const declarations = this.VariableDeclarationList();
-      this._eat('SEMICOLON');
       return {
         type: 'VariableStatement',
         declarations,
       };
+    }
+
+    VariableStatement() {
+      const variableStatement = this.VariableStatementInit();
+      this._eat('SEMICOLON');
+      return variableStatement;
     }
 
     VariableDeclarationList() {

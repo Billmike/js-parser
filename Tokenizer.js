@@ -17,6 +17,9 @@ const Spec = [
   [/^\btrue\b/, 'TRUE'],
   [/^\bfalse\b/, 'FALSE'],
   [/^\bnull\b/, 'NULL'],
+  [/^\bwhile\b/, 'WHILE'],
+  [/^\bdo\b/, 'DO'],
+  [/^\bfor\b/, 'FOR'],
 
   // Identifiers
   [/^\w+/, 'IDENTIFIER'],

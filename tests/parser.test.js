@@ -504,7 +504,9 @@ function exec() {
 
   "hello";
   
-  --x;`
+  for (; ; ) {
+    
+  };`
 
   const parser = new Parser();
   const ast = parser.parse(program);
