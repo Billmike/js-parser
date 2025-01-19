@@ -504,7 +504,7 @@ function exec() {
 
   "hello";
   
-  if (x)  if (y) {} else {}`
+  x > 0 && y < 1;`
 
   const parser = new Parser();
   const ast = parser.parse(program);

@@ -135,7 +135,7 @@ class Parser {
     }
 
     AssignmentExpression() {
-      const left = this.RelationalExpression();
+      const left = this.LogicalOrExpression();
 
       if (!this._isAssignmentOperator(this._lookahead.type)) {
         return left;
@@ -185,6 +185,39 @@ class Parser {
       return this._eat('COMPLEX_ASSIGN');
     }
 
+    LogicalExpression() {
+      return this._BinaryExpression('EqualityExpression', 'LOGICAL_OPERATOR');
+    }
+
+    LogicalAndExpression() {
+      return this._LogicalExpression('EqualityExpression', 'LOGICAL_AND');
+    }
+
+    LogicalOrExpression() {
+      return this._LogicalExpression('LogicalAndExpression', 'LOGICAL_OR');
+    }
+
+    _LogicalExpression(builderName, operatorToken) {
+      let left = this[builderName]();
+
+      while(this._lookahead.type === operatorToken) {
+        const operator = this._eat(operatorToken).value;
+        const right = this[builderName]();
+        left = {
+          type: 'LogicalExpression',
+          operator,
+          left,
+          right,
+        };
+      }
+
+      return left;  
+    }
+
+    EqualityExpression() {
+      return this._BinaryExpression('RelationalExpression', 'EQUALITY_OPERATOR');
+    }
+
     _BinaryExpression(builderName, operatorToken) {
       let left = this[builderName]();
 
@@ -223,7 +256,7 @@ class Parser {
     }
 
     isLiteral(tokenType) {
-      return tokenType === 'NUMBER' || tokenType === 'STRING';
+      return tokenType === 'NUMBER' || tokenType === 'STRING' || tokenType === 'TRUE' || tokenType === 'FALSE' || tokenType === 'NULL';
     }
 
     ParenthesizedExpression() {
@@ -239,9 +272,31 @@ class Parser {
           return this.NumericalLiteral();
         case 'STRING':
           return this.StringLiteral();
+        case 'TRUE':
+          return this.BooleanLiteral(true);
+        case 'FALSE':
+          return this.BooleanLiteral(false);
+        case 'NULL':
+          return this.NullLiteral();
       }
 
       throw new SyntaxError(`Literal: Unexpected literal production`);
+    }
+
+    BooleanLiteral(value) {
+      this._eat(value ? 'TRUE' : 'FALSE');
+      return {
+        type: 'BooleanLiteral',
+        value,
+      };
+    }
+
+    NullLiteral() {
+      this._eat('NULL');
+      return {
+        type: 'NullLiteral',
+        value: null,
+      };
     }
 
     StringLiteral() {

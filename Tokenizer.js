@@ -14,9 +14,15 @@ const Spec = [
   [/^\blet\b/, 'LET'],
   [/^\bif\b/, 'IF'],
   [/^\belse\b/, 'ELSE'],
+  [/^\btrue\b/, 'TRUE'],
+  [/^\bfalse\b/, 'FALSE'],
+  [/^\bnull\b/, 'NULL'],
 
   // Identifiers
   [/^\w+/, 'IDENTIFIER'],
+
+  // Equality operators: ==, !=
+  [/^[=!]=/, 'EQUALITY_OPERATOR'],
 
   // Assignment operators: =, +=, -=, *=, /=, *=
   [/^=/, 'SIMPLE_ASSIGN'],
@@ -41,6 +47,8 @@ const Spec = [
   [/^[+\-]/, 'PLUS_OPERATOR'],
   [/^[*\/]/, 'MULTIPLY_OPERATOR'],
   [/^[<>]=?/, 'RELATIONAL_OPERATOR'],
+  [/^&&/, 'LOGICAL_AND'],
+  [/^\|\|/, 'LOGICAL_OR'],
 ];
 
 class Tokenizer {
