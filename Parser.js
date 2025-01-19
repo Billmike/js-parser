@@ -154,7 +154,7 @@ class Parser {
     }
 
     LeftHandSideExpression() {
-      return this.Identifier();
+      return this.PrimaryExpression();
     }
 
     Identifier() {
@@ -240,7 +240,7 @@ class Parser {
     }
 
     MultiplicativeExpression() {    
-      return this._BinaryExpression('PrimaryExpression', 'MULTIPLY_OPERATOR');
+      return this._BinaryExpression('UnaryExpression', 'MULTIPLY_OPERATOR');
     }
 
     PrimaryExpression() {
@@ -250,6 +250,33 @@ class Parser {
 
       if(this._lookahead.type === 'PAREN_OPEN') {
         return this.ParenthesizedExpression();
+      }
+
+      if (this._lookahead.type === 'IDENTIFIER') {
+        return this.Identifier();
+      }
+
+      return this.LeftHandSideExpression();
+    }
+
+    UnaryExpression() {
+      let operator = null;
+
+      switch(this._lookahead.type) {
+        case 'PLUS_OPERATOR':
+          operator = this._eat('PLUS_OPERATOR').value;
+          break;
+        case 'LOGICAL_NOT':
+          operator = this._eat('LOGICAL_NOT').value;
+          break;
+      }
+
+      if (operator !== null) {
+        return {
+          type: 'UnaryExpression',
+          operator,
+          argument: this.UnaryExpression(),
+        }
       }
 
       return this.LeftHandSideExpression();

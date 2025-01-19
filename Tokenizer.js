@@ -49,6 +49,7 @@ const Spec = [
   [/^[<>]=?/, 'RELATIONAL_OPERATOR'],
   [/^&&/, 'LOGICAL_AND'],
   [/^\|\|/, 'LOGICAL_OR'],
+  [/^!/, 'LOGICAL_NOT'],
 ];
 
 class Tokenizer {
