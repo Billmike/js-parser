@@ -272,7 +272,51 @@ class Parser {
     }
 
     LeftHandSideExpression() {
-      return this.MemberExpression();
+      return this.CallMemberExpression();
+    }
+
+    CallMemberExpression() {
+      const member = this.MemberExpression();
+
+      if (this._lookahead.type === 'PAREN_OPEN') {
+        return this._CallExpression(member)
+      }
+
+      return member
+    }
+
+    _CallExpression(callee) {
+      let callExpression = {
+        type: 'CallExpression',
+        callee,
+        arguments: this.Arguments()
+      }
+
+      if (this._lookahead.type === 'PAREN_OPEN') {
+        callExpression = this._CallExpression(callExpression);
+      }
+
+      return callExpression;
+    }
+
+    Arguments() {
+      this._eat('PAREN_OPEN');
+
+      const argumentList = this._lookahead.type !== 'PAREN_CLOSE' ? this.ArgumentList() : [];
+
+      this._eat('PAREN_CLOSE');
+
+      return argumentList;
+    }
+
+    ArgumentList() {
+      const argumentList = [];
+
+      do {
+        argumentList.push(this.AssignmentExpression())
+      } while(this._lookahead.type === 'COMMA' && this._eat('COMMA'));
+
+      return argumentList;
     }
 
     MemberExpression() {
