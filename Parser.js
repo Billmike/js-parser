@@ -272,7 +272,41 @@ class Parser {
     }
 
     LeftHandSideExpression() {
-      return this.PrimaryExpression();
+      return this.MemberExpression();
+    }
+
+    MemberExpression() {
+      let object = this.PrimaryExpression();
+
+      while (this._lookahead.type === 'DOT' || this._lookahead.type === 'SQUARE_BRACKET_OPEN') {
+        if (this._lookahead.type === 'DOT') {
+          this._eat('DOT');
+          const property = this.Identifier();
+
+          object = {
+            type: 'MemberExpression',
+            computed: false,
+            object,
+            property,
+          }
+        }
+
+        if (this._lookahead.type === 'SQUARE_BRACKET_OPEN') {
+          this._eat('SQUARE_BRACKET_OPEN');
+          const property = this.Expression();
+
+          this._eat('SQUARE_BRACKET_CLOSE');
+
+          object = {
+            type: 'MemberExpression',
+            computed: true,
+            object,
+            property
+          }
+        }
+      }
+
+      return object;
     }
 
     Identifier() {
@@ -284,7 +318,7 @@ class Parser {
     }
 
     _checkValidAssignmentTarget(node) {
-      if (node.type === 'Identifier') {
+      if (node.type === 'Identifier' || node.type === 'MemberExpression') {
         return node;
       }
 

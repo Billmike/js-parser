@@ -8,6 +8,9 @@ const Spec = [
   [/^\)/, 'PAREN_CLOSE'],
   [/^\{/, 'BRACE_OPEN'],
   [/^\}/, 'BRACE_CLOSE'],
+  [/^\[/, 'SQUARE_BRACKET_OPEN'],
+  [/^\]/, 'SQUARE_BRACKET_CLOSE'],
+  [/^\./, 'DOT'],
   [/^,/, 'COMMA'],
 
   // Keywords
