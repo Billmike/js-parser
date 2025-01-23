@@ -47,6 +47,8 @@ class Parser {
           return this.VariableStatement();
         case 'DEF':
           return this.FunctionDeclaration();
+        case 'CLASS':
+          return this.ClassDeclaration();
         case 'RETURN':
           return this.ReturnStatement();
         case 'WHILE':
@@ -56,6 +58,29 @@ class Parser {
         default:
           return this.ExpressionStatement();
       }
+    }
+
+    ClassDeclaration() {
+      this._eat('CLASS');
+
+      const id = this.Identifier();
+
+      const superClass = this._lookahead.type === 'EXTENDS' ? this.ClassExtends() : null;
+
+      const body = this.BlockStatement();
+
+      return {
+        type: 'ClassDeclaration',
+        id,
+        superClass,
+        body,
+      }
+    }
+
+    ClassExtends() {
+      this._eat('EXTENDS');
+
+      return this.Identifier();
     }
 
     FunctionDeclaration() {
@@ -276,6 +301,11 @@ class Parser {
     }
 
     CallMemberExpression() {
+
+      if (this._lookahead.type === 'SUPER') {
+        return this._CallExpression(this.Super())
+      }
+
       const member = this.MemberExpression();
 
       if (this._lookahead.type === 'PAREN_OPEN') {
@@ -452,7 +482,41 @@ class Parser {
         return this.Identifier();
       }
 
+      if (this._lookahead.type === 'THIS') {
+        return this.ThisExpression();
+      }
+
+      if (this._lookahead.type === 'NEW') {
+        return this.NewExpression();
+      }
+
       return this.LeftHandSideExpression();
+    }
+    
+    NewExpression() {
+      this._eat('NEW');
+
+      return {
+        type: 'NewExpression',
+        callee: this.MemberExpression(),
+        arguments: this.Arguments()
+      }
+    }
+
+    ThisExpression() {
+      this._eat('THIS');
+
+      return {
+        type: 'ThisExpression'
+      }
+    }
+
+    Super() {
+      this._eat('SUPER');
+
+      return {
+        type: 'Super'
+      }
     }
 
     UnaryExpression() {

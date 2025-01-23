@@ -25,6 +25,11 @@ const Spec = [
   [/^\bfor\b/, 'FOR'],
   [/^\bdef\b/, 'DEF'],
   [/^\breturn\b/, 'RETURN'],
+  [/^\bclass\b/, 'CLASS'],
+  [/^\bextends\b/, 'EXTENDS'],
+  [/^\bsuper\b/, 'SUPER'],
+  [/^\bnew\b/, 'NEW'],
+  [/^\bthis\b/, 'THIS'],
 
   // Identifiers
   [/^\w+/, 'IDENTIFIER'],
